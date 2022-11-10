@@ -4,7 +4,7 @@ volatile bool in[INPUTS];
 volatile bool last_in[INPUTS];
 const int in_pin[INPUTS] = {2};
 const char* in_str[INPUTS*2] = {
-  "Button1 pressed","Button1 released",
+  "Button0 pressed","Button0 released",
 };
 
 // Output
@@ -16,7 +16,7 @@ const bool out_dft[OUTPUTS] = {false};
 // Pair : met a HIGH, impair : met à LOW
 // exemple : {"/ea fermer", "/ea ouvrir"} 
 const char* out_cmd[OUTPUTS*2] = {
-  "/set Led1 on","/set Led1 off"
+  "/set Led0 on","/set Led0 off"
 };
 #endif
 
@@ -53,7 +53,7 @@ void setup()
 
 void loop()
 {
-	static bool antirebond = fallse;
+	static bool antirebond = false;
 	
 	if(antirebond)
 		delay(100);
