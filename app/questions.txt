@@ -1,0 +1,56 @@
+Question: Quel est le nom que Remy a donne a Aurelie de Maps  
+Bonne reponse: Pasinsulterpastaper
+
+Question: Qu'est ce que Fiona mange a la fin de ses repas
+Bonne reponse: Un carre de chocolat
+
+Question: Quelle est la marque et modele de la voiture de Francis (qu'il n'a d'ailleurs pas le droit de conduire) 
+Bonne reponse: Une MG F roadster
+
+Question: Quelle est l'activite preferee de Lea (quand elle n'est pas a proximite de Xav) 
+Bonne reponse: Le sport
+
+Question: Quel est le nom complet du fils de Bruno 
+Bonne reponse: Zacharias (deuxieme nom)
+
+Question: Qu'elle est la pate de Pongo atteint de malformation 
+Bonne reponse:Avant Gauche
+
+Question: De quelle ville de France est originaire Emmanuel  
+Bonne reponse:Anger
+
+Question: Qui est depuis plus de 7 ans en travaux 
+Bonne reponse: Fiona
+
+Question: Quand Lauriane etait en teletravail a domicile, quel element etait accroche derriere elle  
+Bonne reponse: Un velo
+
+Question: Qu'elles sont les couleurs primaires, qui melange serrait la couleur dont Manon voudrait repeindre l'integralite de l'entreprise  
+Bonne reponse: Bleu + rouge
+
+Question: Dans le film prefere de Tim, quel personnage incarne Christopher Lloyd
+Bonne reponse: le doc
+
+Question: Qui a des douleurs zosteriennes a l'epaule 
+Bonne reponse: Remy
+
+Question: Que doit faire Benjamin tres regulierement au veterinaire  
+Bonne reponse: (point supplementaire  pour le nom de l'animal) Limer les dents de Oli
+
+Question: Qu'elle est la nationalite de l'idole de Gregory  
+Bonne reponse: Belge
+
+Question: Qui demissionne le lundi matin  
+Bonne reponse: Elsa
+
+Question: Qu'elle est le diametre du trou dans le pouce de Sebastien  
+Bonne reponse: 5mm
+
+Question: Pourquoi Adele serrait en retard si toute la ville avait une coupure d'electricite  
+Bonne reponse: Elle habite au 16e etage et devrait prendre alors l'escalier
+
+Question: Combien de jour d'ecole a rater Gauthier en debut d'annee  
+Bonne reponse: 2 jours et demi
+
+Question: Qui s'epanouie dans le desordre 
+Bonne reponse: Sebastien
