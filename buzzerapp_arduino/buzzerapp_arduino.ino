@@ -1,12 +1,14 @@
 
-#define INPUTS 3
+#define INPUTS 5
 volatile bool in[INPUTS];
 volatile bool last_in[INPUTS];
-const int in_pin[INPUTS] = {4,5,6};
+const int in_pin[INPUTS] = {4,5,6,7,8};
 const char* in_str[INPUTS] = {
   "Button0 pressed",
   "Button1 pressed",
   "Button2 pressed",
+  "Button3 pressed",
+  "Button4 pressed",
 };
 
 // Output

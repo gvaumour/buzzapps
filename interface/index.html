@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Buzzer Apps</title>
+	
+	<meta charset="UTF-8">
+    
+	<link rel="stylesheet" href="mystyle.css">
+	<script type="text/javascript" src="QuizGame.js"></script>
+	<script type="text/javascript">
+
+	var modal_answer = document.getElementById("modal_answer");
+	window.onclick = function(event) {
+		if (event.target == modal_answer) {
+			modal_answer.style.display = "none";
+		}
+	}
+
+	let quizGame =  new QuizGame(
+	findGetParameter("ws_hostname", window.location.hostname),
+	findGetParameter("ws_port", 9001),
+	findGetParameter("name", "quizPlayer"),
+	0);
+
+    </script>
+
+
+</head>
+	<body>
+
+		<div id="game_connection">
+			<h3> Waiting connection to the websocket server</h3>
+			<img src="./assets/loading_wheel.gif" width="100" ="Loading wheel"/>
+		</div>
+
+		<div id="game_connected" hidden>
+			<p> <span style="color: #00aa00">Connected </span> to the websocket server</p>
+		</div>
+
+		<div id="game_config">
+			<h2> Game Config </h2>
+			<label for="game_mode_select">Mode de jeu :</label>
+			<select name="game_mode" id="game_mode_select">
+				<option value="blindtest">Blindtest</option>
+				<option value="qcm">QCM</option>
+			</select><br /><br />
+
+			<label for="answer_mode_select">Mode de réponse :</label>
+			<select name="answer_mode" id="answer_mode_select">
+				<option value="answer_freeforall">Free for all</option>
+				<option value="answer_one" selected="selected"> One answer</option>>1 réponse par question</option>
+			</select><br /><br />
+
+			<label for="nb_players_select">Nombre de joueurs :</label>
+			<select name="nb_players" id="nb_players_select">
+				<option value="2">2</option>
+				<option value="3" selected="selected">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</select><br /><br />
+
+			<label for="input_file"> Fichier d'entrée:</label>
+
+			<input type="file"
+				   id="questions_file" name="questions_file"
+				   accept=".txt,.mp3" multiple>
+			<br /><br />
+				   <script>
+			     document.getElementById('questions_file')
+					.addEventListener('change', quizGame.read_questions, false);
+			</script>
+			
+			<div>
+				<label for="player1_name">Joueur 1 </label>
+				<input type="text" id="player1_name" name="player1_name" value="Greg">
+				<br /><br />
+				<label for="player2_name">Joueur 2 </label>
+				<input type="text" id="player2_name" name="player2_name" value="Foo">
+				<br /><br />
+				<label for="player3_name"> Joueur 3 </label>
+				<input type="text" id="player3_name" name="player3_name" value="3e">
+				<br /><br />
+				<label for="player4_name">Joueur 4 </label>
+				<input type="text" id="player4_name" name="player4_name">
+				<br /><br />
+				<label for="player5_name">Joueur 5 </label>
+				<input type="text" id="player5_name" name="player5_name">
+				<br /><br />
+				
+			</div>
+
+			<button onclick="quizGame.init_game()"> Lancer la partie </button>
+		</div>
+		
+		<div id="blindtest_player" hidden>
+			<h2> BlindTest Game </h2>
+			
+			<center>
+				<audio id="audio_player" controls="controls">
+					Your browser does not support the audio element.
+				</audio>
+				<br /><br />
+				<button onclick="quizGame.start_question()" id="start_button"> Start </button>
+				<button onclick="quizGame.resume_question()" id="resume_button" hidden> Resume </button>
+				<button onclick="quizGame.stop_question()"> Stop </button>
+				<button onclick="quizGame.next_question()"> Next </button>
+				<button onclick="quizGame.previous_question()"> Prev </button>
+			</center>
+			<br />
+			<div >
+				<p id="answer_name"> </p>
+				<p id="question_number"> </p>
+				<p id="fichier_name"> </p>
+				<h3> Scores </h3>
+				<table id="player_list">
+					<tr>
+					<th>Name </th>
+					<th> Score </th>
+					<th> Contrôles </th>
+					</tr>
+				</table>
+			</div>
+
+			<div>
+				<h3> Playlist </h3>
+				<table id="audio_list">
+					<tr>
+					<th> Titre </th>
+					<th> Chanteur </th>
+					<th> Fichier  </th>
+					</tr>
+
+			</div>
+		</div>
+
+		<div id="modal_answer">
+			<div id="modal-content">
+			  <p id="text_answer"> </p>
+			  <p> Réponse : </p>
+			  <button onclick="quizGame.accept_answer()"> Acceptée </button>
+			  <button onclick="quizGame.refuse_answer()"> Refusée </button>
+			</div>
+		  
+		</div>
+
+	</body>
+</html>

@@ -1,0 +1,20 @@
+Muse	Sunburn	sunburn.mp3
+Freddy Mercury	There must be more to life than this	moretolife.mp3
+Bananarama	Venus	venus.mp3
+Bruno Mars	Talking to the Moon	talkingtothemoon.mp3
+Drops of Jupiter	Train	dropofjupiter.mp3
+Dionysos	Song for a Jedi	songforajedi.mp3
+Hadès	Good Riddance	goodriddance.mp3
+Diana Ross	Upside Down	upsidedown.mp3
+Aphrodite's Child	The Four Horsemen	fourhorsemen.mp3
+Eros Ramazzotti	La cosa mas bella	cosamas.mp3
+Ariana Grande	God is a woman	godisawoman.mp3
+Rupaul	Glamazon	glamazon.mp3
+Metallica	Orion	orion.mp3
+Europe	The Final Countdown	finalecountdown.mp3
+Ridan	Ulysse	ulysse.mp3
+Jason Derulo	Wiggle	wiggle.mp3
+Phoenix	Lisztomania	listamanie.mp3
+Georges Brassens	Le grand Pan	grandpan.mp3
+Sam Cooke	Cupid	cupid.mp3
+
