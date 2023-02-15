@@ -1,5 +1,5 @@
 Hugues Aufray	Céline	celine.mp3
-The Kinks Lola	lola.mp3
+The Kinks	Lola	lola.mp3
 The Turtles	Elenore	elenore.mp3
 Johny Halliday	Marie	marie.mp3
 Matmatah	Emma	emma.mp3

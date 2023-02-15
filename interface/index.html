@@ -51,6 +51,11 @@
 				<option value="answer_one" selected="selected"> One answer</option>>1 réponse par question</option>
 			</select><br /><br />
 
+
+			<label for="nb_players_select">Points par questions :</label>
+			<input type="text" id="points_per_question" value="2" maxlength="2" size="2">
+			<br /><br />
+
 			<label for="nb_players_select">Nombre de joueurs :</label>
 			<select name="nb_players" id="nb_players_select">
 				<option value="2">2</option>
@@ -137,7 +142,6 @@
 			<div id="modal-content">
 			  <p id="text_answer"> </p>
 			  <p> Réponse : </p>
-			  <button onclick="quizGame.accept_answer()"> Acceptée </button>
 			  <button onclick="quizGame.refuse_answer()"> Refusée </button>
 			</div>
 		  

@@ -4,7 +4,7 @@ Scorpions	Send me an angel	scorpions.mp3
 Les innocents	L'autre finistere	finistere.mp3
 Black Sabbath	Paranoid	paranoid.mp3
 Bon Jovi	Living on a prayer	prayer.mp3
-A regarder	Black Dog	blackdog.mp3
+Led Zeppelin	Black Dog	blackdog.mp3
 La Rue Ketanou	Les hommes que j'aime	hommes.mp3
 White Stripes	Jolene	jolene.mp3
 Noir Desir	Un jour en france	desir.mp3

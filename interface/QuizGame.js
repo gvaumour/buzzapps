@@ -3,7 +3,6 @@ var file_questions = Array()
 var questions_file = ""
 var songs = []
 
-
 // Check for BlobURL support
 var blob = window.URL || window.webkitURL;
 
@@ -191,20 +190,25 @@ class QuizGame
         this.update_score_interface()        
     }
 
-    accept_answer() {
+    accept_answer(score) {
         let modal = document.getElementById("modal_answer")
         modal.style.display = "none";
-        this.increment_score(this.player_id)
-        this.next_question()
+        this.increment_score(this.player_id, score)
+
+        if (score == this.points_per_questions)
+            this.next_question()
+        else 
+            this.resume_question()
     }
     refuse_answer() {
         let modal = document.getElementById("modal_answer")
         modal.style.display = "none";
+        this.resume_question()
     }
 
-    increment_score(player_id) {
+    increment_score(player_id, score) {
        
-        this.players[player_id].score++
+        this.players[player_id].score+= score
         this.ws_send({
             "action" : "updateScore",
             "player_id" : player_id,
@@ -213,11 +217,12 @@ class QuizGame
         this.update_score_interface()
     }
 
-    decrement_score(player_id) {
-        if (this.players[player_id].score <= 0)
-            return;
-        this.players[player_id].score--
-        this.ws_send({
+    decrement_score(player_id, score) {
+        this.players[player_id].score -= score
+        if (this.players[player_id].score < 0)
+            this.players[player_id].score = 0
+
+            this.ws_send({
             "action" : "decrement_score",
             "player_id" : player_id
         })
@@ -240,6 +245,8 @@ class QuizGame
 
         this.render_audio_list()
         this.render_player_list()
+        this.render_anwer_modal()
+
         this.update_score_interface()
 
         this.ws_send({
@@ -332,6 +339,14 @@ class QuizGame
         }
         this.game_mode = game_mode
 
+        e = document.getElementById("points_per_question")
+        let points_per_questions = e.value
+        if (points_per_questions < 1) {
+            this.error = "Wrong input for points per question"
+            return 1;
+        }
+        this.points_per_questions = points_per_questions
+
         e = document.getElementById("nb_players_select");
         let nb_players = e.value
         if (nb_players < 2 || nb_players > 5)
@@ -354,8 +369,8 @@ class QuizGame
                 })
             }
         }
-        console.log(this.players)
 
+        
 
         e = document.getElementById("answer_mode_select");
         let answer_mode = e.value
@@ -416,8 +431,8 @@ class QuizGame
             
             var td_button = document.createElement('td');
             td_button.setAttribute("id","player" + i + "_buttons");
-            td_button.innerHTML = "<button onclick='quizGame.increment_score("+ i +")'> + </button>"
-            td_button.innerHTML += "<button onclick='quizGame.decrement_score("+ i +")'> - </button>"
+            td_button.innerHTML = "<button onclick='quizGame.increment_score("+ i +", 1)'> + </button>"
+            td_button.innerHTML += "<button onclick='quizGame.decrement_score("+ i +", 1)'> - </button>"
 
             tr.appendChild(td_name);
             tr.appendChild(td_score);
@@ -459,6 +474,18 @@ class QuizGame
         
     }
 
+    render_anwer_modal() {
+
+        let div = document.getElementById("modal-content")
+        for(let i = 1 ; i <= this.points_per_questions; i++) {
+
+            let button = document.createElement("button")
+            button.setAttribute("onclick" , "quizGame.accept_answer(" + i  + ")")
+            button.innerHTML = "+" + i
+            div.appendChild(button)
+        } 
+    }
+
     update_score_interface() {
         this.players.forEach( (player,index) => {
             document.getElementById("player" + (index) + "_score").innerHTML = player.score
@@ -471,8 +498,9 @@ class QuizGame
             "<b>Réponse:</b> <br />Auteur: " + this.questions_array[this.current_question].auteur + 
                 "<br /> Chanson: " + this.questions_array[this.current_question].chanson
     
-        document.getElementById("audio_player").src = 
-            this.questions_array[this.current_question].blob
+        if (document.getElementById("audio_player").src !== this.questions_array[this.current_question].blob)
+            document.getElementById("audio_player").src = 
+                this.questions_array[this.current_question].blob
     }
 }
 
