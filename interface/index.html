@@ -17,10 +17,11 @@
 	}
 
 	let quizGame =  new QuizGame(
-	findGetParameter("ws_hostname", window.location.hostname),
+	findGetParameter("ws_hostname", "localhost"),
 	findGetParameter("ws_port", 9001),
 	findGetParameter("name", "quizPlayer"),
 	0);
+
 
     </script>
 
@@ -71,6 +72,7 @@
 				   accept=".txt,.mp3" multiple>
 			<br /><br />
 				   <script>
+
 			     document.getElementById('questions_file')
 					.addEventListener('change', quizGame.read_questions, false);
 			</script>
