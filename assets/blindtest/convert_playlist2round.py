@@ -1,6 +1,6 @@
 import os
 import argparse
-import youtube_dl
+import yt_dlp as youtube_dl
 from pydub import AudioSegment
 
 def get_youtube_mp3(url):
@@ -29,26 +29,20 @@ def convert_to_millis(time):
             
 
 def split_audio_file(mp3_filename, start, end, song, output_dir):
-
-    print(mp3_filename)
     sound = AudioSegment.from_file(mp3_filename)
     
     ms_start = convert_to_millis(start)
     ms_end = convert_to_millis(end)
-    if (ms_start > ms_end):
+    if (ms_start > ms_end or ms_end == 0):
         print("Pb with time sample")
         return "" 
-    elif (ms_end == 0):
-        print("End sample is 0 ?? ")
-        return "" 
         
-    # We get the sample from the full video
+    # We get the sample from the full song
     sample = sound[ms_start:ms_end]
 
-    # We build a filename based on the 10 first letter of the song 
+    # We build a sample filename based on the 10 first letter of the song 
     sample_filename = "".join(ch for ch in song.strip() if ch.isalnum())
     sample_filename = sample_filename[:10:] + ".mp3"
-    print(sample_filename)
     sample.export(os.path.join(output_dir, sample_filename), format="mp3")
 
     return sample_filename
@@ -76,7 +70,7 @@ def parse_playlist_file(playlist_filename, output_dir):
         mp3_filename = get_youtube_mp3(url)
         sample_filename = split_audio_file(mp3_filename, start, end, song, output_dir)
         if sample_filename != "":
-            output_file.write(author + "\t" + song + "\t" + sample_filename)
+            print(author, song, sample_filename, sep="\t", file=output_file)
     
     output_file.close()
  

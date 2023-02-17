@@ -263,23 +263,21 @@ class QuizGame
     {
         this.questions_array = []
 
-        if (file_questions.length == 0)
-        {
-            this.error = "Did not find the question file"
-            return 1;
-        }
-
         file_questions.split("\n").forEach(line => {
             if (line.empty)
                 return
+
+            console.log(line)
             
             let split_line = line.split("\t")
+            console.log(split_line)
             if (split_line.length != 3)
                 return;
 
+            let mp3 = split_line[2].trim()
+
             let blob = songs.find(x => {
-                return x.file === split_line[2];})
-            
+                return x.file === mp3;})            
             if (blob == undefined) {  
                 this.error = "Pb while parsing the config file: song not found " + split_line[2]
                 return 1
@@ -288,9 +286,11 @@ class QuizGame
             this.questions_array.push({
                 "auteur" : split_line[0],
                 "chanson" : split_line[1],
-                "mp3": split_line[2],
+                "mp3": mp3,
                 "blob" : blob.blob
             })
+
+            console.log(this.questions_array)
         });
 
         if (this.questions_array.length == 0)
@@ -309,9 +309,6 @@ class QuizGame
 
         this.during_answer = false
         document.getElementById("audio_player").pause()
-
-        console.log(this.players)
-        console.log(this.player_id)
         document.getElementById("text_answer").innerHTML = "Le joueur " + this.players[this.player_id].name + " a buzzé"
 
         if (this.answer_mode === "answer_one")
