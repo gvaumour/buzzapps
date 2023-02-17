@@ -17,10 +17,11 @@
 	}
 
 	let quizGame =  new QuizGame(
-	findGetParameter("ws_hostname", window.location.hostname),
+	findGetParameter("ws_hostname", "localhost"),
 	findGetParameter("ws_port", 9001),
 	findGetParameter("name", "quizPlayer"),
 	0);
+
 
     </script>
 
@@ -71,10 +72,10 @@
 				   accept=".txt,.mp3" multiple>
 			<br /><br />
 				   <script>
+
 			     document.getElementById('questions_file')
 					.addEventListener('change', quizGame.read_questions, false);
 			</script>
-			
 			<div>
 				<label for="player1_name">Joueur 1 </label>
 				<input type="text" id="player1_name" name="player1_name" value="Greg">
@@ -91,15 +92,13 @@
 				<label for="player5_name">Joueur 5 </label>
 				<input type="text" id="player5_name" name="player5_name">
 				<br /><br />
-				
 			</div>
 
 			<button onclick="quizGame.init_game()"> Lancer la partie </button>
 		</div>
-		
 		<div id="blindtest_player" hidden>
 			<h2> BlindTest Game </h2>
-			
+
 			<center>
 				<audio id="audio_player" controls="controls">
 					Your browser does not support the audio element.
@@ -144,7 +143,6 @@
 			  <p> Réponse : </p>
 			  <button onclick="quizGame.refuse_answer()"> Refusée </button>
 			</div>
-		  
 		</div>
 
 	</body>

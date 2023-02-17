@@ -36,7 +36,7 @@ class QuizGame
             let data = JSON.parse(evt.data)
             if (Object.keys(data).length == 0)
                 return;
-            
+
             if (data.action  == "button_pressed") {
                 if (this.during_answer && data.player_id < this.nb_players) {
                     this.player_id = data.player_id
@@ -54,7 +54,7 @@ class QuizGame
                 "client_type": "interfaceGM",
                 "client_name" : this.name
             })
-        
+
             this.update_interface()
         }
 
@@ -141,7 +141,7 @@ class QuizGame
 
         if (!this.during_answer)
             return
-        
+
         this.during_answer = false
         this.ws_send({
             "action" : "stopQuestion"
@@ -156,8 +156,7 @@ class QuizGame
 
         document.getElementById("resume_button").hidden = true
         document.getElementById("start_button").hidden = false
-  
-            
+
         this.answered_player = []
         this.current_question++
         if (this.current_question == this.nb_questions)
@@ -181,13 +180,13 @@ class QuizGame
 
         document.getElementById("resume_button").hidden = true
         document.getElementById("start_button").hidden = false
-    
+
         if (this.current_question == 0)
             return;
 
         this.answered_player = []
         this.current_question--
-        this.update_score_interface()        
+        this.update_score_interface()
     }
 
     accept_answer(score) {
@@ -197,7 +196,7 @@ class QuizGame
 
         if (score == this.points_per_questions)
             this.next_question()
-        else 
+        else
             this.resume_question()
     }
     refuse_answer() {
@@ -207,7 +206,7 @@ class QuizGame
     }
 
     increment_score(player_id, score) {
-       
+
         this.players[player_id].score+= score
         this.ws_send({
             "action" : "updateScore",
@@ -266,9 +265,6 @@ class QuizGame
         file_questions.split("\n").forEach(line => {
             if (line.empty)
                 return
-
-            console.log(line)
-            
             let split_line = line.split("\t")
             console.log(split_line)
             if (split_line.length != 3)
@@ -281,7 +277,6 @@ class QuizGame
             if (blob == undefined) {  
                 this.error = "Pb while parsing the config file: song not found " + split_line[2]
                 return 1
-            }
 
             this.questions_array.push({
                 "auteur" : split_line[0],
@@ -299,12 +294,11 @@ class QuizGame
             return 1;
         }
 
-        console.log(this.questions_array)
         return 0;
     }
 
     check_answer() {
-        if (this.answer_mode === "answer_one" && this.answered_player.includes(this.player_id)) 
+        if (this.answer_mode === "answer_one" && this.answered_player.includes(this.player_id))
             return;
 
         this.during_answer = false
@@ -313,7 +307,6 @@ class QuizGame
 
         if (this.answer_mode === "answer_one")
             this.answered_player.push(this.player_id)
-            
 
         let modal_answer = document.getElementById("modal_answer")
         modal_answer.style.display = "block";
@@ -354,7 +347,7 @@ class QuizGame
         this.nb_players = nb_players
         this.players = []
         for (let i = 0 ; i < this.nb_players ; i++) {
-            let name = document.getElementById("player" + (i+1) + "_name").value 
+            let name = document.getElementById("player" + (i+1) + "_name").value
             if (!name) {
                 this.error = "Miss the name of player " + (i+1)
                 return 1
@@ -367,19 +360,14 @@ class QuizGame
             }
         }
 
-        
-
         e = document.getElementById("answer_mode_select");
         let answer_mode = e.value
-        if (answer_mode != "answer_one" && answer_mode != "answer_freeforall")
-        {
+        if (answer_mode != "answer_one" && answer_mode != "answer_freeforall") {
             this.error = "Wrong answer mode: "
             return 1;
         }
         this.answer_mode = answer_mode
-
         return this.read_blindtest_file()
-            
     }
 
     read_questions(e) {
@@ -394,9 +382,9 @@ class QuizGame
                 reader.onload = function(e) {
                     var contents = e.target.result
                     file_questions = contents
-        
+
                 };
-                reader.readAsText(files[i]);            
+                reader.readAsText(files[i]);
             }
             else {
                 // We store the song url
@@ -408,7 +396,6 @@ class QuizGame
         }
     }
 
- 
     render_player_list() {
 
         let player_list = document.getElementById("player_list")
@@ -416,16 +403,16 @@ class QuizGame
         for (let i = 0; i < this.nb_players ; i++) {
             var tr = document.createElement('tr');
             tr.setAttribute("id","player_row");
-    
+
             var td_name = document.createElement('td');
             td_name.setAttribute("id","player_row");
             let name = document.getElementById("player" + (i+1) + "_name")
             td_name.innerHTML = name.value
-            
+
             var td_score = document.createElement('td');
             td_score.setAttribute("id","player" + i + "_score");
             td_score.innerHTML = "0"
-            
+
             var td_button = document.createElement('td');
             td_button.setAttribute("id","player" + i + "_buttons");
             td_button.innerHTML = "<button onclick='quizGame.increment_score("+ i +", 1)'> + </button>"
@@ -435,10 +422,10 @@ class QuizGame
             tr.appendChild(td_score);
             tr.appendChild(td_button);
 
-            player_list.appendChild(tr);    
+            player_list.appendChild(tr);
         }
 
-        document.getElementById("fichier_name").innerHTML = 
+        document.getElementById("fichier_name").innerHTML =
             "<b> Fichier </b> " + questions_file
 
         this.nb_questions = songs.length
@@ -464,11 +451,9 @@ class QuizGame
             tr.appendChild(td_titre)
             tr.appendChild(td_auteur)
             tr.appendChild(td_fichier)
-            
+
             audio_list.appendChild(tr)
-            
         })
-        
     }
 
     render_anwer_modal() {
@@ -480,7 +465,7 @@ class QuizGame
             button.setAttribute("onclick" , "quizGame.accept_answer(" + i  + ")")
             button.innerHTML = "+" + i
             div.appendChild(button)
-        } 
+        }
     }
 
     update_score_interface() {
@@ -491,12 +476,12 @@ class QuizGame
         document.getElementById("question_number").innerHTML = "<b>Question </b>" +
             (this.current_question+1) + "/" + this.nb_questions
 
-        document.getElementById("answer_name").innerHTML = 
-            "<b>Réponse:</b> <br />Auteur: " + this.questions_array[this.current_question].auteur + 
+        document.getElementById("answer_name").innerHTML =
+            "<b>Réponse:</b> <br />Auteur: " + this.questions_array[this.current_question].auteur +
                 "<br /> Chanson: " + this.questions_array[this.current_question].chanson
-    
+
         if (document.getElementById("audio_player").src !== this.questions_array[this.current_question].blob)
-            document.getElementById("audio_player").src = 
+            document.getElementById("audio_player").src =
                 this.questions_array[this.current_question].blob
     }
 }
