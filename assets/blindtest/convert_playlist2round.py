@@ -75,14 +75,8 @@ def parse_playlist_file(playlist_filename, output_dir):
     output_file.close()
  
 parser = argparse.ArgumentParser()
-parser.add_argument("-o", "--output", help = "")
-parser.add_argument("-p", "--playlist", help = "Playlist file")
- 
+parser.add_argument("-o", "--output", help = "Output directory", required=True)
+parser.add_argument("-p", "--playlist", help = "Playlist file", required=True)
+
 args = parser.parse_args()
- 
-if not args.playlist:
-    print("Mss the playlist file -f option")
-elif not args.output:
-    print("Miss the output dir -o option")
-else:
-    parse_playlist_file(args.playlist, args.output)
+parse_playlist_file(args.playlist, args.output)

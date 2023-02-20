@@ -1,24 +1,29 @@
 from threading import Thread
-from websocket_server import WebsocketServer
-
+import argparse
 import sys
 import time
 import json
 import serial
+import termios
+import select
+import tty
 
-
-
+from websocket_server import WebsocketServer
 
 nb_players = 0
 during_question = False
 played_buttons = []
+allowed_colors = ["Red" , "Yellow" , "White" , "Green", "Blue"]
+color_inputs = {'r': "Red" , 'y': "Yellow" , 'w' : "White" , 'g' : "Green" , 'b' : "Blue" }
+
+
 
 PORT=9001
 server = WebsocketServer(port = PORT)
 
-def serial_init():
+def serial_init(device):
     ser = serial.Serial(
-        port='/dev/ttyACM0',\
+        port=device,\
         baudrate=115200,\
         parity=serial.PARITY_NONE,\
         stopbits=serial.STOPBITS_ONE,\
@@ -46,10 +51,15 @@ class SerialThread(Thread):
 
                 if line.split(" ")[-1] == "pressed":
 
-                    id_player = int(line.split(" ")[0][-1])
+                    player_color = line.split(" ")[0]
                     print(line)
-                    played_buttons.append(id_player)
+                    played_buttons.append(player_color)
             time.sleep(0.1)
+
+
+def isData():
+    return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
+
 
 def ws_new_client(client, server):
 	print("New client connected and was given id %d" % client['id'])
@@ -89,21 +99,47 @@ class WSServerThread(Thread):
         server.run_forever()
 
 
+parser = argparse.ArgumentParser(description="Back-end for the buzzer quiz game")
+parser.add_argument("-i", "--interactive", help = "Interactive Mode", action="store_true")
+parser.add_argument("-d", "--device", help = "Linux Device for arduino", default="/dev/ttyACM0")
+
+args = parser.parse_args()
+
+if args.interactive: 
+    print("Interactive Mode, arduino is not used")
+else:
+    ser = serial_init(args.device)
+    SerialThread()
+
 WSServerThread()
 
-ser = serial_init()
-SerialThread()
+# We switch stdin into character mode to get non blocking inputs
+old_settings = termios.tcgetattr(sys.stdin)
+tty.setcbreak(sys.stdin.fileno())
 
 
 while True:
+
+    # Input management 
+    if isData():
+        c = sys.stdin.read(1)
+        if c == '\x1b':
+            break
+
+        if args.interactive:
+            if c in color_inputs.keys():
+                played_buttons.append(color_inputs[c])
+                print(played_buttons)
+
+    # Button pressed management
     if len(played_buttons) > 0: 
         if during_question:
-            player_id = played_buttons.pop()
-            if player_id >= 0 and player_id < nb_players:
+            player_color = played_buttons.pop()
+            if player_color in allowed_colors:
 
                 message = json.dumps({
                     "action" : "button_pressed",
-                    "player_id" : player_id
+                    "player_color" : player_color
                 })
                 server.send_message_to_all(message)
                 print(message)
@@ -111,3 +147,6 @@ while True:
             played_buttons = []
 
     time.sleep(0.1)
+
+termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+ser.close()
