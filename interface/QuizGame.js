@@ -38,8 +38,8 @@ class QuizGame
                 return;
 
             if (data.action  == "button_pressed") {
-                if (this.during_answer && data.player_id < this.nb_players) {
-                    this.player_id = data.player_id
+                if (this.during_answer && this.playing_colors.includes(data.player_color.toLowerCase())) {
+                    this.player_color = data.player_color.toLowerCase()
                     this.check_answer()
                 }
             }
@@ -114,7 +114,7 @@ class QuizGame
     }
 
     start_question() {
-        this.answered_player = []
+        this.players.forEach(player => player.has_already_answer = false)
 
         document.getElementById("resume_button").hidden = false
         document.getElementById("start_button").hidden = true
@@ -192,7 +192,7 @@ class QuizGame
     accept_answer(score) {
         let modal = document.getElementById("modal_answer")
         modal.style.display = "none";
-        this.increment_score(this.player_id, score)
+        this.update_score(this.player_color, score)
 
         if (score == this.points_per_questions)
             this.next_question()
@@ -205,25 +205,17 @@ class QuizGame
         this.resume_question()
     }
 
-    increment_score(player_id, score) {
+    update_score(player_color, score) {
+        let player = this.players.find(player => {return player.color === player_color})
 
-        this.players[player_id].score+= score
+        player.score += score
+        if (player.score < 0)
+            player.score = 0
+
         this.ws_send({
             "action" : "updateScore",
-            "player_id" : player_id,
-            "score" : this.players[player_id].score
-        })
-        this.update_score_interface()
-    }
-
-    decrement_score(player_id, score) {
-        this.players[player_id].score -= score
-        if (this.players[player_id].score < 0)
-            this.players[player_id].score = 0
-
-            this.ws_send({
-            "action" : "decrement_score",
-            "player_id" : player_id
+            "player_color" : player_color,
+            "score" : player.score
         })
         this.update_score_interface()
     }
@@ -250,7 +242,7 @@ class QuizGame
 
         this.ws_send({
             "action" : "initGame",
-            "nb_players" : this.nb_players,
+            "nb_players" : this.players.length,
             "nb_questions" : this.nb_questions,
             "answer_mode" : this.answer_mode,
             "players" : this.players,
@@ -262,21 +254,28 @@ class QuizGame
     {
         this.questions_array = []
 
+        if (file_questions.length == 0) {
+            this.error = "Question file not found"
+            return 1
+        }
+
         file_questions.split("\n").forEach(line => {
             if (line.empty)
                 return
             let split_line = line.split("\t")
-            console.log(split_line)
+            
             if (split_line.length != 3)
                 return;
 
             let mp3 = split_line[2].trim()
 
             let blob = songs.find(x => {
-                return x.file === mp3;})            
+                return x.file === mp3;})
+
             if (blob == undefined) {  
                 this.error = "Pb while parsing the config file: song not found " + split_line[2]
                 return 1
+            }
 
             this.questions_array.push({
                 "auteur" : split_line[0],
@@ -284,33 +283,32 @@ class QuizGame
                 "mp3": mp3,
                 "blob" : blob.blob
             })
+        })
 
-            console.log(this.questions_array)
-        });
-
-        if (this.questions_array.length == 0)
-        {
+        if (this.questions_array.length == 0) {
             this.error = "Did not manage to parse the question file"
             return 1;
         }
-
         return 0;
     }
 
     check_answer() {
-        if (this.answer_mode === "answer_one" && this.answered_player.includes(this.player_id))
+
+        let player = this.players.find(player => {return player.color === this.player_color})
+        if (player == undefined)
+            return;
+        if (this.answer_mode === "answer_one" && player.has_already_answer)
             return;
 
         this.during_answer = false
         document.getElementById("audio_player").pause()
-        document.getElementById("text_answer").innerHTML = "Le joueur " + this.players[this.player_id].name + " a buzzé"
+        document.getElementById("text_answer").innerHTML = "Le joueur " + player.name + " a buzzé"
 
         if (this.answer_mode === "answer_one")
-            this.answered_player.push(this.player_id)
+            player.has_already_answer = true
 
         let modal_answer = document.getElementById("modal_answer")
         modal_answer.style.display = "block";
-
     }
 
     read_config() {
@@ -337,28 +335,21 @@ class QuizGame
         }
         this.points_per_questions = points_per_questions
 
-        e = document.getElementById("nb_players_select");
-        let nb_players = e.value
-        if (nb_players < 2 || nb_players > 5)
-        {
-            this.error = "Wrong number of players: between 2 and 5"
-            return 1;
-        }
-        this.nb_players = nb_players
+        // Creating the player array based on filled player's names
         this.players = []
-        for (let i = 0 ; i < this.nb_players ; i++) {
-            let name = document.getElementById("player" + (i+1) + "_name").value
-            if (!name) {
-                this.error = "Miss the name of player " + (i+1)
-                return 1
-            }
-            else {
+        this.playing_colors = []
+        let colors = ["red", "yellow" , "white" , "blue" , "green"]
+        colors.forEach(color => {
+            let name = document.getElementById(color + "_name").value
+            if (name) {
                 this.players.push({
+                    "color" : color,
                     "name" : name,
                     "score" : 0
                 })
+                this.playing_colors.push(color)
             }
-        }
+        })
 
         e = document.getElementById("answer_mode_select");
         let answer_mode = e.value
@@ -400,30 +391,35 @@ class QuizGame
 
         let player_list = document.getElementById("player_list")
 
-        for (let i = 0; i < this.nb_players ; i++) {
+        this.players.forEach(player => {
+          
             var tr = document.createElement('tr');
             tr.setAttribute("id","player_row");
+          
+            let td_color = document.createElement('td');
+            td_color.innerHTML = player.color
 
-            var td_name = document.createElement('td');
+            let td_name = document.createElement('td');
             td_name.setAttribute("id","player_row");
-            let name = document.getElementById("player" + (i+1) + "_name")
-            td_name.innerHTML = name.value
+            td_name.innerHTML = player.name
 
-            var td_score = document.createElement('td');
-            td_score.setAttribute("id","player" + i + "_score");
+            let td_score = document.createElement('td');
+            td_score.setAttribute("id", player.color + "_score");
             td_score.innerHTML = "0"
 
-            var td_button = document.createElement('td');
-            td_button.setAttribute("id","player" + i + "_buttons");
-            td_button.innerHTML = "<button onclick='quizGame.increment_score("+ i +", 1)'> + </button>"
-            td_button.innerHTML += "<button onclick='quizGame.decrement_score("+ i +", 1)'> - </button>"
+            let td_button = document.createElement('td');
+            td_button.setAttribute("id",player.color + "_buttons");
+            td_button.innerHTML = "<button onclick='quizGame.update_score("+ player.color +", 1)'> + </button>"
+            td_button.innerHTML += "<button onclick='quizGame.update_score("+ player.color +", -1)'> - </button>"
 
+            tr.appendChild(td_color);
             tr.appendChild(td_name);
             tr.appendChild(td_score);
             tr.appendChild(td_button);
 
             player_list.appendChild(tr);
-        }
+        })
+
 
         document.getElementById("fichier_name").innerHTML =
             "<b> Fichier </b> " + questions_file
@@ -469,8 +465,8 @@ class QuizGame
     }
 
     update_score_interface() {
-        this.players.forEach( (player,index) => {
-            document.getElementById("player" + (index) + "_score").innerHTML = player.score
+        this.players.forEach( player => {
+            document.getElementById(player.color + "_score").innerHTML = player.score
         })
 
         document.getElementById("question_number").innerHTML = "<b>Question </b>" +

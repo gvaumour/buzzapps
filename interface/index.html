@@ -57,14 +57,6 @@
 			<input type="text" id="points_per_question" value="2" maxlength="2" size="2">
 			<br /><br />
 
-			<label for="nb_players_select">Nombre de joueurs :</label>
-			<select name="nb_players" id="nb_players_select">
-				<option value="2">2</option>
-				<option value="3" selected="selected">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
-			</select><br /><br />
-
 			<label for="input_file"> Fichier d'entrée:</label>
 
 			<input type="file"
@@ -77,20 +69,21 @@
 					.addEventListener('change', quizGame.read_questions, false);
 			</script>
 			<div>
-				<label for="player1_name">Joueur 1 </label>
-				<input type="text" id="player1_name" name="player1_name" value="Greg">
+
+				<label for="yellow_name">Jaune </label>
+				<input type="text" id="yellow_name" name="yellow_name" value="Jaune">
 				<br /><br />
-				<label for="player2_name">Joueur 2 </label>
-				<input type="text" id="player2_name" name="player2_name" value="Foo">
+				<label for="blue_name"> Bleu </label>
+				<input type="text" id="blue_name" name="blue_name" value="Bleu">
 				<br /><br />
-				<label for="player3_name"> Joueur 3 </label>
-				<input type="text" id="player3_name" name="player3_name" value="3e">
+				<label for="red_name"> Rouge </label>
+				<input type="text" id="red_name" name="red_name" value="Rouge">
 				<br /><br />
-				<label for="player4_name">Joueur 4 </label>
-				<input type="text" id="player4_name" name="player4_name">
+				<label for="green_name">Vert </label>
+				<input type="text" id="green_name" name="green_name">
 				<br /><br />
-				<label for="player5_name">Joueur 5 </label>
-				<input type="text" id="player5_name" name="player5_name">
+				<label for="white_name">Blanc </label>
+				<input type="text" id="white_name" name="white_name">
 				<br /><br />
 			</div>
 
@@ -118,7 +111,8 @@
 				<h3> Scores </h3>
 				<table id="player_list">
 					<tr>
-					<th>Name </th>
+					<th> Couleur </th>
+					<th> Nom </th>
 					<th> Score </th>
 					<th> Contrôles </th>
 					</tr>
