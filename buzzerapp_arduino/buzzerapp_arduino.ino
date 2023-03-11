@@ -2,50 +2,47 @@
 #define INPUTS 5
 volatile bool in[INPUTS];
 volatile bool last_in[INPUTS];
-const int in_pin[INPUTS] = {4,5,6,7,8};
+const int in_pin[INPUTS] = {11,3,4,6,9};
 const char* in_str[INPUTS] = {
-  "Yellow pressed",
-  "Blue pressed",
-  "Red pressed",
-  "Green pressed",
-  "White pressed",
+  "white pressed",
+  "yellow pressed",
+  "blue pressed",
+  "green pressed",
+  "red pressed",
 };
 
-// Output
-#define OUTPUTS 0
-#if OUTPUTS > 0
-const int out_pin[OUTPUTS] = {3};
-const bool out_dft[OUTPUTS] = {false};
+#define OUTPUTS 5
+const int out_pin[OUTPUTS] = {10,2,5,7,8};
+const bool out_dft[OUTPUTS] = {false,false,false,false,false};
 
-// Pair : met a HIGH, impair : met à LOW
-// exemple : {"/ea fermer", "/ea ouvrir"} 
 const char* out_cmd[OUTPUTS*2] = {
-  "/set Led1 on","/set Led1 off"
+  "/set whiteLed on","/set whiteLed off",
+  "/set yellowLed on","/set yellowLed off",
+  "/set blueLed on","/set blueLed off",
+  "/set greenLed on","/set greenLed off",
+  "/set redLed on","/set redLed off"
 };
-#endif
-
 
 bool update(bool force = false);
 
+const byte numChars = 32;
+char receivedChars[numChars]; 
+boolean newSerialData  = false;
+
 void setup()
 { 
-  
-	#if INPUTS > 0
 	for(uint8_t i=0;i<INPUTS;i++)
 	{
 		in[i] = false;
 		last_in[i] = false;
 		pinMode(in_pin[i],INPUT_PULLUP);
 	}
-	#endif
     
-	#if OUTPUTS > 0
 	for(uint8_t i=0;i<OUTPUTS;i++)
 	{
 		pinMode(out_pin[i],OUTPUT);
 		digitalWrite(out_pin[i],out_dft[i]?HIGH:LOW);
 	}
-	#endif
 	
 	Serial.begin(115200);
 	delay(100);
@@ -57,24 +54,46 @@ void loop()
 	static bool antirebond = false;
 	
 	if(antirebond)
-		delay(100);
+		delay(20);
     
-	#if INPUTS > 0
 	for(uint8_t i=0;i<INPUTS;i++)
 		in[i]  = (digitalRead(in_pin[i]) == LOW);
-	#endif    
 
-  if (Serial.available()> 0){
-    String cmd = Serial.readString();    
-    onCommand(cmd);
+  recvFromSerial();
+
+  if (newSerialData == true) {
+    processCommand();
   }
-  
+
 	antirebond = update();
 }
 
-void onCommand(const String &cmd)
+void recvFromSerial() {
+    static byte ndx = 0;
+    char endMarker = '\n';
+    char rc;
+    
+    if (Serial.available() > 0) {
+        rc = Serial.read();
+        if (rc != endMarker) {
+            receivedChars[ndx] = rc;
+            ndx++;
+            if (ndx >= numChars) {
+                ndx = numChars - 1;
+            }
+        }
+        else {
+            receivedChars[ndx] = '\0';
+            ndx = 0;
+            newSerialData = true;
+        }
+    }
+}
+
+void processCommand()
 {	
-	#if OUTPUTS > 0
+
+  String cmd = String(receivedChars);
 	for(uint8_t i=0;i<OUTPUTS;i++)
 	{
 		if(strlen(out_cmd[i*2]) > 0 && cmd.startsWith(out_cmd[i*2]))
@@ -88,7 +107,23 @@ void onCommand(const String &cmd)
 			return;
 		}
 	}
-	#endif	
+  
+  if(cmd.startsWith("/set allLeds on"))
+  {
+    for(uint8_t i=0;i<OUTPUTS;i++)
+    {
+      digitalWrite(out_pin[i],HIGH);
+    }
+    return;
+  }
+  if(cmd.startsWith("/set allLeds off"))
+  {
+    for(uint8_t i=0;i<OUTPUTS;i++)
+    {
+      digitalWrite(out_pin[i],LOW);
+    }
+    return;
+  }
 }
 
 bool update(bool force)
