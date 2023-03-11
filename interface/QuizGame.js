@@ -38,8 +38,8 @@ class QuizGame
                 return;
 
             if (data.action  == "button_pressed") {
-                if (this.during_answer && this.playing_colors.includes(data.player_color.toLowerCase())) {
-                    this.player_color = data.player_color.toLowerCase()
+                if (this.during_answer && this.playing_colors.includes(data.player_color)) {
+                    this.player_color = data.player_color
                     this.check_answer()
                 }
             }
@@ -114,24 +114,41 @@ class QuizGame
     }
 
     start_question() {
+
+        if (this.during_answer)
+            return
+        
         this.players.forEach(player => player.has_already_answer = false)
 
         document.getElementById("resume_button").hidden = false
         document.getElementById("start_button").hidden = true
 
-        this.resume_question()
+        this.during_answer = true
+
+        this.ws_send({
+            "action" : "startQuestion"
+        })
+        document.getElementById("audio_player").play()
+
     }
 
     resume_question() {
-        document.getElementById("audio_player").play()
 
         if (this.during_answer)
             return
 
+        let playing_colors = []
+        this.players.forEach(player => {
+            if ( !(this.answer_mode === "answer_one" && player.has_already_answer))
+                playing_colors.push(player.color)
+        })
+
         this.during_answer = true
         this.ws_send({
-            "action" : "startQuestion"
+            "action" : "resumeQuestion",
+            "colors" : playing_colors
         })        
+        document.getElementById("audio_player").play()
     }
 
     stop_question() {
@@ -151,6 +168,10 @@ class QuizGame
     next_question() {
         if (this.during_answer)
             this.stop_question()
+
+        this.ws_send({
+            "action": "turnLedsOff",
+        })
         if (this.current_question == this.nb_questions)
             return
 
@@ -300,9 +321,17 @@ class QuizGame
         if (this.answer_mode === "answer_one" && player.has_already_answer)
             return;
 
+
+        this.ws_send({
+            "action" : "setOneColor",
+            "color": this.player_color,
+        })
+
         this.during_answer = false
         document.getElementById("audio_player").pause()
         document.getElementById("text_answer").innerHTML = "Le joueur " + player.name + " a buzzé"
+
+
 
         if (this.answer_mode === "answer_one")
             player.has_already_answer = true
