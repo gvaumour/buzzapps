@@ -14,6 +14,7 @@ nb_players = 0
 during_question = False
 played_buttons = []
 allowed_colors = ["red", "yellow" , "white" , "blue" , "green"]
+is_interactive = False
 
 # Keyboard mapping for the interactive mode, type r will simulate a red button pressed event
 color_inputs = {'r': "red" , 'y': "yellow" , 'w' : "white" , 'g' : "green" , 'b' : "blue" }
@@ -39,6 +40,11 @@ def serial_init(device):
 
 
 def switch_led(color, is_turn_on, all_leds):
+    global is_interactive
+
+    if is_interactive: 
+        return 
+
     if ser.is_open:
         if is_turn_on:
             if all_leds:
@@ -162,6 +168,7 @@ parser.add_argument("-d", "--device", help = "Linux Device for arduino", default
 
 args = parser.parse_args()
 if args.interactive: 
+    is_interactive = True
     print("Interactive Mode, arduino is not used")
 else:
     ser = serial_init(args.device)

@@ -43,7 +43,7 @@
 			<label for="game_mode_select">Mode de jeu :</label>
 			<select name="game_mode" id="game_mode_select">
 				<option value="blindtest">Blindtest</option>
-				<option value="qcm">QCM</option>
+				<option value="quiz"> Quiz</option>
 			</select><br /><br />
 
 			<label for="answer_mode_select">Mode de réponse :</label>
@@ -89,8 +89,8 @@
 
 			<button onclick="quizGame.init_game()"> Lancer la partie </button>
 		</div>
-		<div id="blindtest_player" hidden>
-			<h2> BlindTest Game </h2>
+		<div id="question_player" hidden>
+			<h2 id="question_player_header" > BlindTest Game </h2>
 
 			<center>
 				<audio id="audio_player" controls="controls">
@@ -120,13 +120,9 @@
 			</div>
 
 			<div>
-				<h3> Playlist </h3>
-				<table id="audio_list">
-					<tr>
-					<th> Titre </th>
-					<th> Chanteur </th>
-					<th> Fichier  </th>
-					</tr>
+				<h3 id="question_list_header"> Playlist </h3>
+				<table id="question_list">
+				</table>
 
 			</div>
 		</div>

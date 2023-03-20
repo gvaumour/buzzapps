@@ -128,7 +128,9 @@ class QuizGame
         this.ws_send({
             "action" : "startQuestion"
         })
-        document.getElementById("audio_player").play()
+
+        if (this.game_mode == "blindtest")
+            document.getElementById("audio_player").play()
 
     }
 
@@ -152,7 +154,10 @@ class QuizGame
     }
 
     stop_question() {
-        document.getElementById("audio_player").pause()
+ 
+        if (this.game_mode == "blindtest")
+            document.getElementById("audio_player").pause()
+        
         document.getElementById("resume_button").hidden = true
         document.getElementById("start_button").hidden = false
 
@@ -248,14 +253,20 @@ class QuizGame
             alert(this.error)
             return;
         }
-        if (this.game_mode != "blindtest"){
+        if (this.game_mode != "blindtest" && this.game_mode != "quiz"){
             alert("This game mode is not implemented")
+            return
         }
 
-        document.getElementById("game_config").hidden = true
-        document.getElementById("blindtest_player").hidden = false
+        this.nb_questions = this.questions_array.length
+        this.current_question = 0
 
-        this.render_audio_list()
+        document.getElementById("game_config").hidden = true
+        document.getElementById("question_player").hidden = false
+        if (this.game_mode == "quiz")
+            document.getElementById("audio_player").hidden = true
+
+        this.render_question_list()
         this.render_player_list()
         this.render_anwer_modal()
 
@@ -263,11 +274,45 @@ class QuizGame
 
         this.ws_send({
             "action" : "initGame",
+            "game_type" : this.game_mode,
             "nb_players" : this.players.length,
             "nb_questions" : this.nb_questions,
             "answer_mode" : this.answer_mode,
             "players" : this.players,
             "questions": this.questions_array
+        })
+    }
+
+    read_quiz_file() {
+
+        let question = ""
+        let answer = ""
+        this.questions_array = []
+
+        file_questions.split("\n").forEach(line => {
+            if (line.empty)
+                return
+            let split_line = line.split(":")
+
+            if (split_line.length < 2)
+                return;
+
+            if (split_line[0] == "Question") 
+                question = split_line.slice(1).join('').trim()
+
+            if (split_line[0] == "Réponse") {
+                answer = split_line.slice(1).join('').trim()
+
+                if (question == "")
+                    alert("No question found for answer " + answer + ", skipping this")
+                else {
+                    this.questions_array.push({
+                        "question" : question,
+                        "answer" : answer
+                    })    
+                }
+                question = ""
+            }
         })
     }
 
@@ -328,7 +373,10 @@ class QuizGame
         })
 
         this.during_answer = false
-        document.getElementById("audio_player").pause()
+        
+        if (this.game_mode == "blindtest")
+            document.getElementById("audio_player").pause()
+        
         document.getElementById("text_answer").innerHTML = "Le joueur " + player.name + " a buzzé"
 
 
@@ -344,16 +392,12 @@ class QuizGame
 
         let e = document.getElementById("game_mode_select");
         let game_mode = e.value;
-        if (game_mode != "blindtest" && game_mode != "qcm")
+        if (game_mode != "blindtest" && game_mode != "quiz")
         {
-            this.error = "Wrong value for the game mode (blindtest/qcm)"
+            this.error = "Wrong value for the game mode (blindtest/quiz)"
             return 1;
         }
 
-        if (game_mode == "qcm") {
-            this.error = "Game mode not implemented yet"
-            return 1;
-        }
         this.game_mode = game_mode
 
         e = document.getElementById("points_per_question")
@@ -387,7 +431,11 @@ class QuizGame
             return 1;
         }
         this.answer_mode = answer_mode
-        return this.read_blindtest_file()
+
+        if(this.game_mode == "blindtest")
+            return this.read_blindtest_file()
+        else 
+            return this.read_quiz_file()        
     }
 
     read_questions(e) {
@@ -453,32 +501,62 @@ class QuizGame
         document.getElementById("fichier_name").innerHTML =
             "<b> Fichier </b> " + questions_file
 
-        this.nb_questions = songs.length
-        this.current_question = 0
     }
 
-    render_audio_list() {
+    /**
+     * Generate the HTML table for the list of question of the round
+     */
+    render_question_list() {
 
-        let audio_list = document.getElementById("audio_list")
+        let question_list = document.getElementById("question_list")
 
-        this.questions_array.forEach( (element, index, arr) => {
+        if (this.game_mode == "blindtest") {
 
-            let tr = document.createElement('tr');
-            tr.setAttribute('class','song_item');
+            document.getElementById("question_player_header").innerHTML = "Blindtest Game"
+            document.getElementById("question_list_header").innerHTML = "Blindtest Playlist"
+            // Table Header Generation
+            question_list.innerHTML = "<tr> <th> Titre </th> <th> Chanteur </th> <th>Fichier</th> </tr>"
+            this.questions_array.forEach( (element, index, arr) => {
 
-            let td_titre = document.createElement('td');
-            td_titre.innerHTML = element.chanson
-            let td_auteur = document.createElement('td');
-            td_auteur.innerHTML = element.auteur
-            let td_fichier = document.createElement('td');
-            td_fichier.innerHTML = element.mp3
+                let tr = document.createElement('tr');
+                tr.setAttribute('class','song_item');
 
-            tr.appendChild(td_titre)
-            tr.appendChild(td_auteur)
-            tr.appendChild(td_fichier)
+                let td_titre = document.createElement('td');
+                td_titre.innerHTML = element.chanson
+                let td_auteur = document.createElement('td');
+                td_auteur.innerHTML = element.auteur
+                let td_fichier = document.createElement('td');
+                td_fichier.innerHTML = element.mp3
 
-            audio_list.appendChild(tr)
-        })
+                tr.appendChild(td_titre)
+                tr.appendChild(td_auteur)
+                tr.appendChild(td_fichier)
+
+                question_list.appendChild(tr)
+            })
+        }
+        else if (this.game_mode == "quiz") {
+
+            document.getElementById("question_player_header").innerHTML = "Quiz Game"
+            document.getElementById("question_list_header").innerHTML = "Question List"
+            question_list.innerHTML = "<tr> <th> Question </th> <th> Reponse </th></tr>"
+            this.questions_array.forEach( (element, index, arr) => {
+
+                let tr = document.createElement('tr');
+                tr.setAttribute('class','song_item');
+
+                let td_question = document.createElement('td');
+                td_question.innerHTML = element.question
+                let td_reponse = document.createElement('td');
+                td_reponse.innerHTML = element.answer
+
+                tr.appendChild(td_question)
+                tr.appendChild(td_reponse)
+
+                question_list.appendChild(tr)
+            })
+
+        }
     }
 
     render_anwer_modal() {
@@ -501,13 +579,21 @@ class QuizGame
         document.getElementById("question_number").innerHTML = "<b>Question </b>" +
             (this.current_question+1) + "/" + this.nb_questions
 
-        document.getElementById("answer_name").innerHTML =
+        if (this.game_mode == "blindtest") {
+            document.getElementById("answer_name").innerHTML =
             "<b>Réponse:</b> <br />Auteur: " + this.questions_array[this.current_question].auteur +
                 "<br /> Chanson: " + this.questions_array[this.current_question].chanson
 
-        if (document.getElementById("audio_player").src !== this.questions_array[this.current_question].blob)
-            document.getElementById("audio_player").src =
-                this.questions_array[this.current_question].blob
+            if (document.getElementById("audio_player").src !== this.questions_array[this.current_question].blob)
+                document.getElementById("audio_player").src =
+                    this.questions_array[this.current_question].blob
+        }
+        else if (this.game_mode == "quiz") {
+            document.getElementById("answer_name").innerHTML = "<b> Question : </b> " + 
+            this.questions_array[this.current_question].question + 
+            "<br /> <b> Réponse : </b> " + this.questions_array[this.current_question].answer
+        }
+
     }
 }
 

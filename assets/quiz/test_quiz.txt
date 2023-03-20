@@ -1,0 +1,6 @@
+Question: A 10m près, quelle est la taille de la tour Eiffel ?
+Réponse: 324 mètres 
+
+Question: Qui a écrit le comte de Monte Christo 
+Réponse: Alexandre Dumas 
+
