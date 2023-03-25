@@ -486,8 +486,8 @@ class QuizGame
 
             let td_button = document.createElement('td');
             td_button.setAttribute("id",player.color + "_buttons");
-            td_button.innerHTML = "<button onclick='quizGame.update_score("+ player.color +", 1)'> + </button>"
-            td_button.innerHTML += "<button onclick='quizGame.update_score("+ player.color +", -1)'> - </button>"
+            td_button.innerHTML = "<button onclick='quizGame.update_score(\""+ player.color +"\", 1)'> + </button>"
+            td_button.innerHTML += "<button onclick='quizGame.update_score(\""+ player.color +"\", -1)'> - </button>"
 
             tr.appendChild(td_color);
             tr.appendChild(td_name);
