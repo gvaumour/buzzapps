@@ -35,15 +35,32 @@ The game master interface:  allows to configure and launch a game
 It is done as a simple HTML/JS page 
 The format to create quiz or blindtest rounds can be found in the assets subfolder
 
-# Install
+# Electronic
 
-There are dependencies for the Python server
+Parts needed for the project: 
+- 5 arcade button
+- 10 USB-A female port
+- 5 USB-A males to male cables 
+- 1 Arduino Uno
+- 5 4-digits 7-segments with i2c interfaces
+
+Connections are pretty straigthforward 
+![image](schematic.png)
+
+I have decided to connect the buzzer with USB, as it uses 4 pins, which is just what I need to connect a arcade button, 2 pins for the button switches and 2 for the button led. The buzzers can be plug and unplugged with ease.
+
+The 7-segments displays are connected to the Arduino with an I2C interface, each display having a different I2C address. It uses the HT16k33 module to translate the I2C message to 7-segments configuration. 
+
+
+# Software Installation
+
+For the Python server, there are dependencies
 ``pip install websocket_server termios tty select serial json``
 
 
 # Running 
 
 1) Flash the arduino code and connect it to a laptop
-2) Launch the python server, there is a parameter to indicate the tty device 
-note that there is also an interactive mode for testing purposing that does not require the arduino board to be conencted
+2) Launch the python server, there is an optional parameter to indicate the tty device 
+note that there is also an interactive mode for testing purposing that does not require the arduino board to be connected
 3) Open the web page with a browser, it should mention ``Connected to the websocket server``
