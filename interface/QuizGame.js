@@ -23,6 +23,7 @@ class QuizGame
         this.volume_playList = 1.0;
 
         this.init_ws();
+        this.reset_scores();
     }
 
     init_ws()
@@ -231,6 +232,13 @@ class QuizGame
         this.resume_question()
     }
 
+    reset_scores() {
+        this.ws_send({
+            "action" : "resetScore",
+        })
+    }
+
+
     update_score(player_color, score) {
         let player = this.players.find(player => {return player.color === player_color})
 
@@ -281,6 +289,7 @@ class QuizGame
             "players" : this.players,
             "questions": this.questions_array
         })
+
     }
 
     read_quiz_file() {
@@ -423,6 +432,10 @@ class QuizGame
                 this.playing_colors.push(color)
             }
         })
+        if (this.players.length == 0) {
+            this.error = "No players declared"
+            return 1
+        }
 
         e = document.getElementById("answer_mode_select");
         let answer_mode = e.value

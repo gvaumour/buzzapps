@@ -69,22 +69,36 @@
 					.addEventListener('change', quizGame.read_questions, false);
 			</script>
 			<div>
+			<br />
 
-				<label for="yellow_name">Jaune </label>
-				<input type="text" id="yellow_name" name="yellow_name" value="Jaune">
-				<br /><br />
-				<label for="blue_name"> Bleu </label>
-				<input type="text" id="blue_name" name="blue_name" value="Bleu">
-				<br /><br />
-				<label for="red_name"> Rouge </label>
-				<input type="text" id="red_name" name="red_name" value="Rouge">
-				<br /><br />
-				<label for="green_name">Vert </label>
-				<input type="text" id="green_name" name="green_name">
-				<br /><br />
-				<label for="white_name">Blanc </label>
-				<input type="text" id="white_name" name="white_name">
-				<br /><br />
+			<table> 
+				<tr> 
+					<th>Buzzer </th>
+					<th>Nom du Joueur </th>
+				</tr>
+				<tr> 
+					<td> <label for="yellow_name">Jaune </label> </td>
+					<td> <input type="text" id="yellow_name" name="yellow_name"> </td>
+				</tr> 
+				<tr>
+					<td> <label for="blue_name"> Bleu </label></td>	
+					<td> <input type="text" id="blue_name" name="blue_name"> </td>
+				</tr>
+				<tr>
+					<td><label for="red_name"> Rouge </label></td>
+					<td><input type="text" id="red_name" name="red_name"></td>
+				</tr>
+				<tr>
+					<td> <label for="green_name">Vert </label> </td>
+					<td> <input type="text" id="green_name" name="green_name"> </td>
+				</tr>
+				<tr> 
+					<td> <label for="white_name">Blanc </label> </td>
+					<td><input type="text" id="white_name" name="white_name"></td>
+				</tr>
+			</table>
+			<br />
+			<br />
 			</div>
 
 			<button onclick="quizGame.init_game()"> Lancer la partie </button>

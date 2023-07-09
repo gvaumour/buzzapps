@@ -38,6 +38,18 @@ def serial_init(device):
         sys.exit()
     return ser
 
+
+def reset_scores():
+    if is_interactive: 
+        return 
+
+    if ser.is_open:
+        cmd = ("/reset scores\n".encode())
+        time.sleep(.05)
+        ser.write(cmd)
+        ser.flushOutput()
+
+
 def set_score(color, score):
     if is_interactive: 
         return 
@@ -148,7 +160,8 @@ def ws_message_received(client, server, message):
         allowed_colors = []
         for player in players:
             allowed_colors.append(player["color"])
-        
+
+        reset_scores()
         for color in allowed_colors: 
             set_score(color, 0)
         
@@ -160,6 +173,8 @@ def ws_message_received(client, server, message):
 
     elif data["action"] == "turnLedsOff":
         switchLeds(False)
+    elif data["action"] == "resetScore":
+        reset_scores()
     
     elif data["action"] == "updateScore":
         color = data["player_color"]

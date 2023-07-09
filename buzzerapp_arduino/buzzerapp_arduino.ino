@@ -14,7 +14,7 @@ WireInterface wireInterface(Wire);
 #define INPUTS 5
 volatile bool in[INPUTS];
 volatile bool last_in[INPUTS];
-const int in_pin[INPUTS] = {11,3,4,6,9};
+const int in_pin[INPUTS] = {10,3,4,6,9};
 const char* in_str[INPUTS] = {
   "white pressed",
   "yellow pressed",
@@ -24,7 +24,7 @@ const char* in_str[INPUTS] = {
 };
 
 #define OUTPUTS 5
-const int out_pin[OUTPUTS] = {10,2,5,7,8};
+const int out_pin[OUTPUTS] = {11,2,5,7,8};
 const bool out_dft[OUTPUTS] = {false,false,false,false,false};
 
 const char* out_cmd[OUTPUTS*2] = {
@@ -253,6 +253,10 @@ void processCommand()
     String color = cmd.substring(11, index_color );
     String score_str = cmd.substring(index_color, cmd.charAt(cmd.length() - 1));
     display_score(color, score_str);
+  }
+
+  if(cmd.startsWith("/reset scores")) {
+    reset_scores();
   }
 
   newSerialData = false;
